@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>Change Password</h2>
+    <form action="{{ url_for('change_password') }}" method="POST">
+      <label>New Password:</label>
+      <input type="password" name="new_password" required>
+      <label>Confirm Password:</label>
+      <input type="password" name="confirm_password" required>
+      <button type="submit">Update</button>
+    </form>
+    {% if message %}
+      <p class="msg">{{ message }}</p>
+    {% endif %}
+  </div>
+</body>
+</html>
