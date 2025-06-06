@@ -1,0 +1,600 @@
+{% extends "base.html" %} {% block content %}
+
+<!-- Hero Section -->
+<div class="relative min-h-screen">
+  <!-- Animated Background -->
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-indigo-600"
+  >
+    <div class="absolute inset-0 bg-black/10"></div>
+    <!-- Floating clouds animation -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div
+        class="cloud cloud-1 absolute top-20 left-10 w-16 h-16 bg-white/20 rounded-full"
+      ></div>
+      <div
+        class="cloud cloud-2 absolute top-32 right-20 w-20 h-20 bg-white/15 rounded-full"
+      ></div>
+      <div
+        class="cloud cloud-3 absolute top-40 left-1/3 w-12 h-12 bg-white/25 rounded-full"
+      ></div>
+    </div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+    {% if not current_user.is_authenticated %}
+    <!-- Landing Hero for Guest Users -->
+    <div class="text-center pt-16 pb-12">
+      <div class="mb-8">
+        <div
+          class="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-md rounded-full mb-6 border border-white/20"
+        >
+          <i class="fas fa-cloud-sun text-3xl text-yellow-300"></i>
+        </div>
+        <h1
+          class="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight"
+        >
+          Weather
+          <span
+            class="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent"
+          >
+            Forecast
+          </span>
+        </h1>
+        <p
+          class="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed"
+        >
+          Get accurate weather forecasts and real-time conditions for any
+          location worldwide. Plan your day with confidence using our advanced
+          weather prediction system.
+        </p>
+      </div>
+
+      <!-- Weather Info Card -->
+      <div class="max-w-2xl mx-auto mb-12">
+        <div
+          class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-center"
+        >
+          <h3 class="text-xl font-semibold text-white mb-4">
+            <i class="fas fa-cloud-sun mr-2 text-yellow-400"></i>
+            Weather Forecast
+          </h3>
+          <p class="text-white/80 mb-4">
+            Getting accurate weather data for your current location
+          </p>
+          <button
+            id="weather-refresh"
+            class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl transition-all duration-300 text-lg font-semibold flex items-center justify-center mx-auto shadow-lg hover:shadow-xl"
+            title="Refresh Weather"
+          >
+            <i class="fas fa-sync-alt mr-2"></i>
+            Refresh Weather
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Location Detection -->
+      <div class="max-w-xl mx-auto mb-12">
+        <div id="current-location-section">
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="p-3 bg-green-500/20 rounded-lg mr-4">
+                  <i class="fas fa-map-marker-alt text-2xl text-green-300"></i>
+                </div>
+                <div class="text-left">
+                  <h3 class="text-lg font-semibold text-white mb-1">
+                    Your Current Location
+                  </h3>
+                  <div id="current-location-display">
+                    <p class="text-white/70 text-sm">
+                      <i class="fas fa-spinner fa-spin mr-2"></i>
+                      Detecting your location...
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <button
+                id="detect-location-btn"
+                class="bg-white/20 hover:bg-white/30 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center border border-white/30"
+                title="Detect my location"
+              >
+                <i class="fas fa-crosshairs mr-2"></i>
+                Detect
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+      <!-- Welcome Section for Logged Users -->
+      <div class="text-center pt-8 pb-8">
+        <div
+          class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-4xl mx-auto"
+        >
+          <div class="flex items-center justify-center mb-6">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mr-4"
+            >
+              <i class="fas fa-user text-white text-2xl"></i>
+            </div>
+            <div class="text-left">
+              <h1 class="text-3xl md:text-4xl font-bold text-white">
+                Welcome back, {{ current_user.fullname }}!
+              </h1>
+              <p class="text-white/80 text-lg">
+                Ready to check the latest weather conditions?
+              </p>
+            </div>
+          </div>
+
+          <!-- Weather Controls -->
+          <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+            <button
+              id="weather-refresh"
+              class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium"
+              title="Refresh Weather"
+            >
+              <i class="fas fa-sync-alt mr-2"></i>
+              Refresh Weather
+            </button>
+            <button
+              id="use-current-location-btn"
+              class="flex-1 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium"
+              title="Use current location"
+            >
+              <i class="fas fa-map-marker-alt mr-2"></i>
+              My Location
+            </button>
+            <a
+              href="{{ url_for('chatbot.index') }}"
+              class="flex-1 bg-purple-500/80 hover:bg-purple-500 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium border border-purple-400/30"
+            >
+              <i class="fas fa-robot mr-2"></i>
+              AI Assistant
+            </a>
+          </div>
+
+          <!-- Admin Panel (if admin) -->
+          {% if current_user.is_admin() %}
+          <div class="flex justify-center mt-4">
+            <a
+              href="{{ url_for('admin.dashboard') }}"
+              class="bg-orange-500/80 hover:bg-orange-500 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center"
+            >
+              <i class="fas fa-cog mr-2"></i>
+              Admin Panel
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Current Location for Logged Users -->
+        <div class="max-w-xl mx-auto mt-8">
+          <div id="current-location-section">
+            <div
+              class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="p-2 bg-green-500/20 rounded-lg mr-3">
+                    <i class="fas fa-map-marker-alt text-lg text-green-300"></i>
+                  </div>
+                  <div class="text-left">
+                    <h4 class="text-base font-semibold text-white">
+                      Current Location
+                    </h4>
+                    <div id="current-location-display">
+                      <p class="text-white/70 text-sm">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Detecting...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  id="detect-location-btn"
+                  class="bg-white/20 hover:bg-white/30 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center text-sm border border-white/30"
+                  title="Detect my location"
+                >
+                  <i class="fas fa-crosshairs mr-1"></i>
+                  Detect
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Weather Widget Container -->
+      <div id="weather-widget" class="max-w-6xl mx-auto">
+        <!-- Loading Indicator -->
+        <div id="weather-loading" class="text-center py-16">
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-2xl p-12 border border-white/20"
+          >
+            <div
+              class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-yellow-400 mb-6"
+            ></div>
+            <p class="text-white text-xl font-medium">
+              Loading weather data...
+            </p>
+            <p class="text-white/70 text-sm mt-2">
+              Please wait while we fetch the latest information
+            </p>
+          </div>
+        </div>
+
+        <!-- Error Container -->
+        <div id="weather-error" class="hidden mb-8"></div>
+
+        <!-- Current Weather Display -->
+        <div id="current-weather" class="mb-8"></div>
+
+        <!-- 7-Day Forecast -->
+        <div id="weather-forecast"></div>
+      </div>
+
+      {% if not current_user.is_authenticated %}
+      <!-- Features Section for Guest Users -->
+      <div class="py-16">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Why Choose Our Weather Service?
+          </h2>
+          <p class="text-white/80 text-lg max-w-2xl mx-auto">
+            Advanced meteorological technology meets user-friendly design
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-xl p-8 border border-white/20 text-center hover:bg-white/15 transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <i class="fas fa-globe text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-4">
+              Global Coverage
+            </h3>
+            <p class="text-white/80">
+              Access weather data for any city around the world with
+              satellite-accurate forecasts and real-time updates.
+            </p>
+          </div>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-xl p-8 border border-white/20 text-center hover:bg-white/15 transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <i class="fas fa-calendar-week text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-4">
+              7-Day Forecast
+            </h3>
+            <p class="text-white/80">
+              Plan ahead with detailed daily weather forecasts including
+              temperature, humidity, and precipitation data.
+            </p>
+          </div>
+
+          <div
+            class="bg-white/10 backdrop-blur-md rounded-xl p-8 border border-white/20 text-center hover:bg-white/15 transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <i class="fas fa-robot text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-4">AI Assistant</h3>
+            <p class="text-white/80">
+              Get personalized weather insights and recommendations through our
+              intelligent AI chatbot assistant.
+            </p>
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div
+          class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-8 md:p-12 text-center"
+        >
+          <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+            Ready to Get Started?
+          </h3>
+          <p class="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+            Join thousands of users who trust our weather forecasts for their
+            daily planning. Create your free account and unlock personalized
+            weather features.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="{{ url_for('auth.register') }}"
+              class="bg-white text-orange-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl transition-all duration-300 text-lg shadow-lg hover:shadow-xl"
+            >
+              <i class="fas fa-user-plus mr-2"></i>
+              Sign Up Free
+            </a>
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="border-2 border-white hover:bg-white hover:text-orange-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 text-lg"
+            >
+              <i class="fas fa-sign-in-alt mr-2"></i>
+              Login
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Location Detection JavaScript -->
+  <script>
+    class LocationDetector {
+      constructor() {
+        this.currentLocation = null;
+        this.init();
+      }
+
+      init() {
+        this.bindEvents();
+        this.detectLocationOnLoad();
+      }
+
+      bindEvents() {
+        const detectBtn = document.getElementById("detect-location-btn");
+        const useLocationBtn = document.getElementById(
+          "use-current-location-btn"
+        );
+
+        if (detectBtn) {
+          detectBtn.addEventListener("click", () => this.detectLocation());
+        }
+
+        if (useLocationBtn) {
+          useLocationBtn.addEventListener("click", () =>
+            this.useCurrentLocationForWeather()
+          );
+        }
+      }
+
+      detectLocationOnLoad() {
+        this.detectLocation();
+      }
+
+      detectLocation() {
+        const displayEl = document.getElementById("current-location-display");
+        const detectBtn = document.getElementById("detect-location-btn");
+
+        if (!navigator.geolocation) {
+          this.showLocationError(
+            "Geolocation is not supported by this browser."
+          );
+          return;
+        }
+
+        displayEl.innerHTML = `
+        <p class="text-white/70 text-sm">
+          <i class="fas fa-spinner fa-spin mr-2"></i>
+          Detecting your location...
+        </p>
+      `;
+
+        if (detectBtn) {
+          detectBtn.disabled = true;
+          detectBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-2"></i>Detecting...';
+        }
+
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000,
+        };
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => this.handleLocationSuccess(position),
+          (error) => this.handleLocationError(error),
+          options
+        );
+      }
+
+      async handleLocationSuccess(position) {
+        const { latitude, longitude } = position.coords;
+        this.currentLocation = { lat: latitude, lon: longitude };
+
+        try {
+          const locationName = await this.reverseGeocode(latitude, longitude);
+          this.showLocationSuccess(locationName, latitude, longitude);
+        } catch (error) {
+          this.showLocationSuccess(
+            `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+            latitude,
+            longitude
+          );
+        }
+      }
+
+      async reverseGeocode(lat, lon) {
+        try {
+          const response = await fetch(
+            `/api/weather/location/reverse?lat=${lat}&lon=${lon}`
+          );
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            return result.data.name;
+          }
+        } catch (error) {
+          console.error("Reverse geocoding failed:", error);
+        }
+
+        return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+      }
+
+      showLocationSuccess(locationName, lat, lon) {
+        const displayEl = document.getElementById("current-location-display");
+        const detectBtn = document.getElementById("detect-location-btn");
+
+        displayEl.innerHTML = `
+        <div class="flex items-center text-sm">
+          <i class="fas fa-map-marker-alt mr-2 text-green-300"></i>
+          <span class="font-medium text-white">${locationName}</span>
+        </div>
+        <p class="text-white/70 text-xs mt-1">
+          ${lat.toFixed(4)}, ${lon.toFixed(4)}
+        </p>
+      `;
+
+        if (detectBtn) {
+          detectBtn.disabled = false;
+          detectBtn.innerHTML = '<i class="fas fa-crosshairs mr-2"></i>Detect';
+        }
+      }
+
+      showLocationError(message) {
+        const displayEl = document.getElementById("current-location-display");
+        const detectBtn = document.getElementById("detect-location-btn");
+
+        displayEl.innerHTML = `
+        <p class="text-red-300 text-sm">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          ${message}
+        </p>
+      `;
+
+        if (detectBtn) {
+          detectBtn.disabled = false;
+          detectBtn.innerHTML = '<i class="fas fa-crosshairs mr-2"></i>Retry';
+        }
+      }
+
+      handleLocationError(error) {
+        let message = "Unable to retrieve your location.";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            message = "Location access denied by user.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message = "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            message = "Location request timed out.";
+            break;
+        }
+
+        this.showLocationError(message);
+      }
+
+      useCurrentLocationForWeather() {
+        if (!this.currentLocation) {
+          // Show a nice toast notification instead of alert
+          this.showNotification("Please detect your location first", "warning");
+          return;
+        }
+
+        if (typeof window.loadWeatherByCoordinates === "function") {
+          window.loadWeatherByCoordinates(
+            this.currentLocation.lat,
+            this.currentLocation.lon
+          );
+        } else {
+          console.warn("Weather functions not available");
+        }
+      }
+
+      showNotification(message, type = "info") {
+        // Create a beautiful notification
+        const notification = document.createElement("div");
+        notification.className = `fixed top-24 right-4 z-50 bg-white/90 backdrop-blur-md rounded-lg shadow-xl p-4 border border-white/20 transform translate-x-full transition-transform duration-300`;
+        notification.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas fa-${
+            type === "warning"
+              ? "exclamation-triangle text-yellow-500"
+              : "info-circle text-blue-500"
+          } mr-2"></i>
+          <span class="text-gray-800">${message}</span>
+        </div>
+      `;
+
+        document.body.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+          notification.classList.remove("translate-x-full");
+        }, 100);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.classList.add("translate-x-full");
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+    }
+
+    // Initialize location detector when DOM is loaded
+    document.addEventListener("DOMContentLoaded", function () {
+      window.locationDetector = new LocationDetector();
+    });
+  </script>
+
+  <style>
+    /* Cloud animations */
+    .cloud {
+      animation: float 20s infinite linear;
+    }
+
+    .cloud-1 {
+      animation-delay: 0s;
+    }
+
+    .cloud-2 {
+      animation-delay: -10s;
+    }
+
+    .cloud-3 {
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateX(-100px);
+      }
+      100% {
+        transform: translateX(calc(100vw + 100px));
+      }
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: all 0.2s ease-in-out;
+    }
+
+    /* Custom button hover effects */
+    button:hover,
+    a:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Glass morphism effects */
+    .glass-card {
+      backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+
+  {% endblock %}
+</div>
