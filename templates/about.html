@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block content %}
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <h1>About Flask MVC App</h1>
+
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Project Structure</h5>
+        <p class="card-text">
+          This Flask application follows the Model-View-Controller (MVC)
+          architectural pattern:
+        </p>
+
+        <ul>
+          <li>
+            <strong>Models:</strong> Handle data logic and database interactions
+          </li>
+          <li>
+            <strong>Views:</strong> Manage the presentation layer (templates)
+          </li>
+          <li>
+            <strong>Controllers:</strong> Process user input and coordinate
+            between models and views
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Features</h5>
+        <ul>
+          <li>Flask application factory pattern</li>
+          <li>Blueprint-based routing</li>
+          <li>Configuration management</li>
+          <li>Template inheritance</li>
+          <li>Static file serving</li>
+          <li>RESTful API endpoints</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Technology Stack</h5>
+        <ul>
+          <li><strong>Backend:</strong> Python Flask</li>
+          <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript</li>
+          <li><strong>Styling:</strong> Bootstrap 5</li>
+          <li><strong>Architecture:</strong> MVC Pattern</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
