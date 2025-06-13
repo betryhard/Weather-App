@@ -1,0 +1,412 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white shadow-lg rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h1 class="text-2xl font-bold text-gray-900">📧 Email & SMTP Settings</h1>
+      <p class="text-gray-600 mt-1">
+        Configure email settings for notifications and account verification
+      </p>
+    </div>
+
+    <div class="p-6">
+      <!-- Connection Status -->
+      <div id="connection-status" class="mb-6 hidden">
+        <div class="rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <div id="status-icon"></div>
+            </div>
+            <div class="ml-3">
+              <h3 id="status-title" class="text-sm font-medium"></h3>
+              <div id="status-message" class="mt-2 text-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form method="POST" class="space-y-6">
+        <!-- SMTP Server Configuration -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            🌐 SMTP Server Configuration
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="smtp_server"
+                class="block text-sm font-medium text-gray-700"
+                >SMTP Server *</label
+              >
+              <input
+                type="text"
+                id="smtp_server"
+                name="smtp_server"
+                value="{{ settings.smtp_server }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="smtp.gmail.com"
+                required
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                e.g., smtp.gmail.com, smtp.outlook.com
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="smtp_port"
+                class="block text-sm font-medium text-gray-700"
+                >SMTP Port *</label
+              >
+              <input
+                type="number"
+                id="smtp_port"
+                name="smtp_port"
+                value="{{ settings.smtp_port }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="587"
+                min="1"
+                max="65535"
+                required
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                Common ports: 587 (TLS), 465 (SSL), 25 (unsecured)
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="smtp_username"
+                class="block text-sm font-medium text-gray-700"
+                >SMTP Username *</label
+              >
+              <input
+                type="text"
+                id="smtp_username"
+                name="smtp_username"
+                value="{{ settings.smtp_username }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="your-email@gmail.com"
+                required
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                Usually your email address
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="smtp_password"
+                class="block text-sm font-medium text-gray-700"
+                >SMTP Password</label
+              >
+              <input
+                type="password"
+                id="smtp_password"
+                name="smtp_password"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Leave blank to keep current password"
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                For Gmail, use App Password instead of regular password
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                name="smtp_use_tls"
+                class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"
+                {%
+                if
+                settings.smtp_use_tls
+                %}checked{%
+                endif
+                %}
+              />
+              <span class="ml-2 text-sm text-gray-700"
+                >Use TLS Encryption (Recommended)</span
+              >
+            </label>
+          </div>
+        </div>
+
+        <!-- Email Configuration -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            ✉️ Email Configuration
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="sender_email"
+                class="block text-sm font-medium text-gray-700"
+                >Sender Email *</label
+              >
+              <input
+                type="email"
+                id="sender_email"
+                name="sender_email"
+                value="{{ settings.sender_email }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="noreply@weather-forecast.com"
+                required
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                Email address that appears in "From" field
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="sender_name"
+                class="block text-sm font-medium text-gray-700"
+                >Sender Name</label
+              >
+              <input
+                type="text"
+                id="sender_name"
+                name="sender_name"
+                value="{{ settings.sender_name }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Weather Forecast"
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                Display name for outgoing emails
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            🔒 Security Settings
+          </h3>
+
+          <div>
+            <label
+              for="verification_expires_minutes"
+              class="block text-sm font-medium text-gray-700"
+              >Verification Link Expiry (minutes)</label
+            >
+            <input
+              type="number"
+              id="verification_expires_minutes"
+              name="verification_expires_minutes"
+              value="{{ settings.verification_expires_minutes }}"
+              class="mt-1 block w-full md:w-32 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              min="5"
+              max="1440"
+              placeholder="30"
+            />
+            <p class="text-xs text-gray-500 mt-1">
+              How long email verification links remain valid (5-1440 minutes)
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+          <button
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
+          >
+            💾 Save Settings
+          </button>
+
+          <button
+            type="button"
+            id="test-connection-btn"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
+          >
+            🔌 Test Connection
+          </button>
+
+          <button
+            type="button"
+            id="send-test-email-btn"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
+          >
+            📤 Send Test Email
+          </button>
+
+          <a
+            href="{{ url_for('admin.verification_logs') }}"
+            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 inline-block"
+          >
+            📋 View Verification Logs
+          </a>
+
+          <a
+            href="{{ url_for('admin.dashboard') }}"
+            class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 px-4 rounded-lg transition duration-200 inline-block"
+          >
+            ← Back to Admin Panel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Test Email Modal -->
+<div
+  id="test-email-modal"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+>
+  <div
+    class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+  >
+    <div class="mt-3">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Send Test Email</h3>
+      <div class="mb-4">
+        <label
+          for="test-email-address"
+          class="block text-sm font-medium text-gray-700 mb-2"
+          >Email Address</label
+        >
+        <input
+          type="email"
+          id="test-email-address"
+          class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="test@example.com"
+        />
+      </div>
+      <div class="flex gap-3">
+        <button
+          id="send-test-btn"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex-1"
+        >
+          Send Test
+        </button>
+        <button
+          id="cancel-test-btn"
+          class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const testConnectionBtn = document.getElementById("test-connection-btn");
+    const sendTestEmailBtn = document.getElementById("send-test-email-btn");
+    const testEmailModal = document.getElementById("test-email-modal");
+    const sendTestBtn = document.getElementById("send-test-btn");
+    const cancelTestBtn = document.getElementById("cancel-test-btn");
+    const connectionStatus = document.getElementById("connection-status");
+
+    function showStatus(type, title, message) {
+      const statusDiv = connectionStatus;
+      const iconDiv = document.getElementById("status-icon");
+      const titleDiv = document.getElementById("status-title");
+      const messageDiv = document.getElementById("status-message");
+
+      // Set classes based on type
+      statusDiv.className =
+        "mb-6 rounded-md p-4 " +
+        (type === "success" ? "bg-green-50" : "bg-red-50");
+      titleDiv.className =
+        "text-sm font-medium " +
+        (type === "success" ? "text-green-800" : "text-red-800");
+      messageDiv.className =
+        "mt-2 text-sm " +
+        (type === "success" ? "text-green-700" : "text-red-700");
+      iconDiv.innerHTML = type === "success" ? "✅" : "❌";
+
+      titleDiv.textContent = title;
+      messageDiv.textContent = message;
+      statusDiv.classList.remove("hidden");
+    }
+
+    // Test connection
+    testConnectionBtn.addEventListener("click", function () {
+      this.disabled = true;
+      this.textContent = "🔄 Testing...";
+
+      fetch('{{ url_for("admin.test_email_connection") }}', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            showStatus("success", "Connection Successful", data.message);
+          } else {
+            showStatus("error", "Connection Failed", data.message);
+          }
+        })
+        .catch((error) => {
+          showStatus(
+            "error",
+            "Connection Error",
+            "Failed to test connection: " + error.message
+          );
+        })
+        .finally(() => {
+          this.disabled = false;
+          this.textContent = "🔌 Test Connection";
+        });
+    });
+
+    // Send test email
+    sendTestEmailBtn.addEventListener("click", function () {
+      testEmailModal.classList.remove("hidden");
+    });
+
+    cancelTestBtn.addEventListener("click", function () {
+      testEmailModal.classList.add("hidden");
+      document.getElementById("test-email-address").value = "";
+    });
+
+    sendTestBtn.addEventListener("click", function () {
+      const email = document.getElementById("test-email-address").value;
+      if (!email) {
+        alert("Please enter an email address");
+        return;
+      }
+
+      this.disabled = true;
+      this.textContent = "📤 Sending...";
+
+      fetch('{{ url_for("admin.send_test_email") }}', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            showStatus("success", "Test Email Sent", data.message);
+            testEmailModal.classList.add("hidden");
+            document.getElementById("test-email-address").value = "";
+          } else {
+            showStatus("error", "Failed to Send Test Email", data.message);
+          }
+        })
+        .catch((error) => {
+          showStatus(
+            "error",
+            "Email Error",
+            "Failed to send test email: " + error.message
+          );
+        })
+        .finally(() => {
+          this.disabled = false;
+          this.textContent = "Send Test";
+        });
+    });
+  });
+</script>
+{% endblock %}

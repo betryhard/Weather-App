@@ -1,0 +1,818 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="fixed top-16 left-0 right-0 bottom-0 flex">
+  <!-- Sidebar -->
+  <div class="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+    <div
+      class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-600 to-purple-700"
+    >
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-robot mr-3"></i>
+        System Prompts
+      </h3>
+      <p class="text-purple-100 text-sm mt-1">AI Chatbot Configuration</p>
+    </div>
+    <nav class="flex-1 p-4 space-y-2">
+      <a
+        href="{{ url_for('admin.dashboard') }}"
+        class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition duration-200 group"
+      >
+        <i
+          class="fas fa-arrow-left mr-3 text-gray-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">Back to Dashboard</span>
+      </a>
+      <div class="border-t border-gray-200 my-4"></div>
+      <button
+        onclick="createPrompt()"
+        class="w-full flex items-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-200 group"
+      >
+        <i
+          class="fas fa-plus mr-3 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">New Prompt</span>
+      </button>
+      <button
+        onclick="refreshPrompts()"
+        class="w-full flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition duration-200 group"
+      >
+        <i
+          class="fas fa-sync-alt mr-3 text-gray-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">Refresh</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div
+    class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 overflow-y-auto"
+  >
+    <div class="p-6">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+          System Prompt Management
+        </h1>
+        <p class="text-gray-600">
+          Configure and manage AI chatbot system prompts for different behaviors
+        </p>
+      </div>
+
+      <!-- System Prompts Table -->
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+              <div class="p-2 bg-purple-100 rounded-lg mr-3">
+                <i class="fas fa-robot text-purple-600"></i>
+              </div>
+              Prompt Library
+            </h2>
+            <div class="flex space-x-3">
+              <select
+                id="perPageSelect"
+                onchange="changePerPage()"
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="5">5 per page</option>
+                <option value="10" selected>10 per page</option>
+                <option value="25">25 per page</option>
+                <option value="50">50 per page</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Name & Description
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Creator
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Created
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="prompts-table-body"
+              class="bg-white divide-y divide-gray-200"
+            >
+              <!-- Dynamic content will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div
+          id="pagination-container"
+          class="px-6 py-4 border-t border-gray-200 bg-gray-50"
+        >
+          <!-- Pagination will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Prompt Modal -->
+<div
+  id="promptModal"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div
+    class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex justify-between items-center">
+        <h2 id="modalTitle" class="text-2xl font-bold text-gray-800">
+          Create New System Prompt
+        </h2>
+        <button
+          onclick="closeModal()"
+          class="text-gray-400 hover:text-gray-600 text-2xl"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <form id="promptForm" class="p-6 space-y-6">
+      <input type="hidden" id="promptId" value="" />
+
+      <div>
+        <label
+          for="promptName"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Prompt Name <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="promptName"
+          required
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          placeholder="e.g., Weather Assistant v2.0"
+        />
+      </div>
+
+      <div>
+        <label
+          for="promptDescription"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Description
+        </label>
+        <input
+          type="text"
+          id="promptDescription"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          placeholder="Brief description of this prompt's purpose"
+        />
+      </div>
+
+      <div>
+        <label
+          for="promptContent"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          System Prompt Content <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <textarea
+            id="promptContent"
+            required
+            rows="15"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+            placeholder="Enter the complete system prompt for the AI chatbot..."
+          ></textarea>
+          <div class="absolute bottom-3 right-3 text-xs text-gray-500">
+            <span id="charCount">0</span> characters
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">
+          <i class="fas fa-info-circle mr-1"></i>
+          This prompt will define how the AI chatbot behaves and responds to
+          users
+        </p>
+      </div>
+
+      <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          onclick="closeModal()"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-200 flex items-center"
+        >
+          <i class="fas fa-save mr-2"></i>
+          <span id="submitButtonText">Create Prompt</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Prompt Modal -->
+<div
+  id="viewModal"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div
+    class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-800">View System Prompt</h2>
+        <button
+          onclick="closeViewModal()"
+          class="text-gray-400 hover:text-gray-600 text-2xl"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Name</label
+          >
+          <p
+            id="viewPromptName"
+            class="text-lg font-semibold text-gray-900"
+          ></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Description</label
+          >
+          <p id="viewPromptDescription" class="text-gray-700"></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Status</label
+          >
+          <span
+            id="viewPromptStatus"
+            class="inline-block px-3 py-1 rounded-full text-sm font-medium"
+          ></span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >System Prompt Content</label
+        >
+        <div
+          class="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-80 overflow-y-auto"
+        >
+          <pre
+            id="viewPromptContent"
+            class="whitespace-pre-wrap font-mono text-sm text-gray-800"
+          ></pre>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6"
+      >
+        <button
+          onclick="closeViewModal()"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div
+  id="deleteModal"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+    <div class="p-6">
+      <div class="flex items-center mb-4">
+        <div
+          class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-4"
+        >
+          <i class="fas fa-exclamation-triangle text-red-600"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900">Delete System Prompt</h3>
+      </div>
+      <p class="text-gray-500 mb-6">
+        Are you sure you want to delete "<span
+          id="deletePromptName"
+          class="font-medium"
+        ></span
+        >"? This action cannot be undone.
+      </p>
+      <div class="flex justify-end space-x-4">
+        <button
+          onclick="closeDeleteModal()"
+          class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          onclick="confirmDelete()"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div
+  id="loadingSpinner"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+    <div
+      class="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"
+    ></div>
+    <span class="text-gray-700">Processing...</span>
+  </div>
+</div>
+
+<script>
+  // Global variables
+  let currentPage = 1;
+  let perPage = 10;
+  let currentPromptId = null;
+
+  // Initialize page
+  document.addEventListener("DOMContentLoaded", function () {
+    loadPrompts();
+
+    // Character counter for prompt content
+    document
+      .getElementById("promptContent")
+      .addEventListener("input", updateCharCount);
+
+    // Form submission
+    document
+      .getElementById("promptForm")
+      .addEventListener("submit", handleSubmit);
+  });
+
+  // Load prompts with pagination
+  async function loadPrompts(page = 1) {
+    try {
+      showSpinner();
+      const response = await fetch(
+        `/admin/api/system-prompts?page=${page}&per_page=${perPage}`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        renderPromptsTable(data.prompts);
+        renderPagination(data.pagination);
+      } else {
+        showError("Failed to load system prompts");
+      }
+    } catch (error) {
+      console.error("Error loading prompts:", error);
+      showError("Network error while loading prompts");
+    } finally {
+      hideSpinner();
+    }
+  }
+
+  // Render prompts table
+  function renderPromptsTable(prompts) {
+    const tbody = document.getElementById("prompts-table-body");
+
+    if (prompts.length === 0) {
+      tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                    <div class="flex flex-col items-center">
+                        <i class="fas fa-robot text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-lg font-medium">No system prompts found</p>
+                        <p class="text-sm">Create your first prompt to get started</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+      return;
+    }
+
+    tbody.innerHTML = prompts
+      .map(
+        (prompt) => `
+        <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">
+                ${
+                  prompt.is_active
+                    ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-check mr-1"></i>Active</span>'
+                    : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Inactive</span>'
+                }
+            </td>
+            <td class="px-6 py-4">
+                <div class="text-sm font-medium text-gray-900">${escapeHtml(
+                  prompt.name
+                )}</div>
+                <div class="text-sm text-gray-500">${escapeHtml(
+                  prompt.description || "No description"
+                )}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                ${escapeHtml(prompt.creator_username || "Unknown")}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${formatDate(prompt.created_at)}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                <button onclick="viewPrompt(${prompt.id})" 
+                        class="text-blue-600 hover:text-blue-900" title="View">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button onclick="editPrompt(${prompt.id})" 
+                        class="text-yellow-600 hover:text-yellow-900" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </button>
+                ${
+                  !prompt.is_active
+                    ? `<button onclick="activatePrompt(${prompt.id})" 
+                             class="text-green-600 hover:text-green-900" title="Activate">
+                        <i class="fas fa-play"></i>
+                     </button>`
+                    : ""
+                }
+                <button onclick="deletePrompt(${prompt.id}, '${escapeHtml(
+          prompt.name
+        )}')" 
+                        class="text-red-600 hover:text-red-900" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `
+      )
+      .join("");
+  }
+
+  // Render pagination
+  function renderPagination(pagination) {
+    const container = document.getElementById("pagination-container");
+
+    if (pagination.pages <= 1) {
+      container.innerHTML = "";
+      return;
+    }
+
+    let paginationHTML = `
+        <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Showing ${(pagination.page - 1) * pagination.per_page + 1} to 
+                ${Math.min(
+                  pagination.page * pagination.per_page,
+                  pagination.total
+                )} of 
+                ${pagination.total} results
+            </div>
+            <div class="flex space-x-1">
+    `;
+
+    // Previous button
+    if (pagination.has_prev) {
+      paginationHTML += `
+            <button onclick="loadPrompts(${pagination.prev_num})" 
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+                Previous
+            </button>
+        `;
+    }
+
+    // Page numbers
+    const startPage = Math.max(1, pagination.page - 2);
+    const endPage = Math.min(pagination.pages, pagination.page + 2);
+
+    for (let i = startPage; i <= endPage; i++) {
+      const isActive = i === pagination.page;
+      paginationHTML += `
+            <button onclick="loadPrompts(${i})" 
+                    class="px-3 py-2 text-sm border ${
+                      isActive
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "border-gray-300 hover:bg-gray-50"
+                    } rounded-lg">
+                ${i}
+            </button>
+        `;
+    }
+
+    // Next button
+    if (pagination.has_next) {
+      paginationHTML += `
+            <button onclick="loadPrompts(${pagination.next_num})" 
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+                Next
+            </button>
+        `;
+    }
+
+    paginationHTML += `
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = paginationHTML;
+  }
+
+  // Modal functions
+  function createPrompt() {
+    document.getElementById("modalTitle").textContent =
+      "Create New System Prompt";
+    document.getElementById("submitButtonText").textContent = "Create Prompt";
+    document.getElementById("promptForm").reset();
+    document.getElementById("promptId").value = "";
+    updateCharCount();
+    showModal();
+  }
+
+  function editPrompt(id) {
+    // Find prompt in current data or fetch it
+    fetch(`/admin/api/system-prompts`)
+      .then((response) => response.json())
+      .then((data) => {
+        const prompt = data.prompts.find((p) => p.id === id);
+        if (prompt) {
+          document.getElementById("modalTitle").textContent =
+            "Edit System Prompt";
+          document.getElementById("submitButtonText").textContent =
+            "Update Prompt";
+          document.getElementById("promptId").value = prompt.id;
+          document.getElementById("promptName").value = prompt.name;
+          document.getElementById("promptDescription").value =
+            prompt.description || "";
+          document.getElementById("promptContent").value =
+            prompt.prompt_content;
+          updateCharCount();
+          showModal();
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching prompt:", error);
+        showError("Failed to load prompt data");
+      });
+  }
+
+  function viewPrompt(id) {
+    fetch(`/admin/api/system-prompts`)
+      .then((response) => response.json())
+      .then((data) => {
+        const prompt = data.prompts.find((p) => p.id === id);
+        if (prompt) {
+          document.getElementById("viewPromptName").textContent = prompt.name;
+          document.getElementById("viewPromptDescription").textContent =
+            prompt.description || "No description";
+          document.getElementById("viewPromptContent").textContent =
+            prompt.prompt_content;
+
+          const statusElement = document.getElementById("viewPromptStatus");
+          if (prompt.is_active) {
+            statusElement.className =
+              "inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800";
+            statusElement.innerHTML = '<i class="fas fa-check mr-1"></i>Active';
+          } else {
+            statusElement.className =
+              "inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800";
+            statusElement.textContent = "Inactive";
+          }
+
+          showViewModal();
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching prompt:", error);
+        showError("Failed to load prompt data");
+      });
+  }
+
+  function deletePrompt(id, name) {
+    currentPromptId = id;
+    document.getElementById("deletePromptName").textContent = name;
+    showDeleteModal();
+  }
+
+  async function activatePrompt(id) {
+    try {
+      showSpinner();
+      const response = await fetch(`/admin/api/system-prompts/${id}/activate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess(data.message);
+        loadPrompts(currentPage);
+      } else {
+        showError(data.error || "Failed to activate prompt");
+      }
+    } catch (error) {
+      console.error("Error activating prompt:", error);
+      showError("Network error while activating prompt");
+    } finally {
+      hideSpinner();
+    }
+  }
+
+  async function confirmDelete() {
+    try {
+      showSpinner();
+      const response = await fetch(
+        `/admin/api/system-prompts/${currentPromptId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess(data.message);
+        closeDeleteModal();
+        loadPrompts(currentPage);
+      } else {
+        showError(data.error || "Failed to delete prompt");
+      }
+    } catch (error) {
+      console.error("Error deleting prompt:", error);
+      showError("Network error while deleting prompt");
+    } finally {
+      hideSpinner();
+    }
+  }
+
+  // Form handling
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const id = document.getElementById("promptId").value;
+    const isEdit = !!id;
+
+    const formData = {
+      name: document.getElementById("promptName").value,
+      description: document.getElementById("promptDescription").value,
+      prompt_content: document.getElementById("promptContent").value,
+    };
+
+    try {
+      showSpinner();
+      const url = isEdit
+        ? `/admin/api/system-prompts/${id}`
+        : "/admin/api/system-prompts";
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess(
+          isEdit ? "Prompt updated successfully" : "Prompt created successfully"
+        );
+        closeModal();
+        loadPrompts(currentPage);
+      } else {
+        showError(
+          data.error || `Failed to ${isEdit ? "update" : "create"} prompt`
+        );
+      }
+    } catch (error) {
+      console.error("Error saving prompt:", error);
+      showError("Network error while saving prompt");
+    } finally {
+      hideSpinner();
+    }
+  }
+
+  // Utility functions
+  function showModal() {
+    document.getElementById("promptModal").classList.remove("hidden");
+    document.getElementById("promptModal").classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("promptModal").classList.add("hidden");
+    document.getElementById("promptModal").classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+  }
+
+  function showViewModal() {
+    document.getElementById("viewModal").classList.remove("hidden");
+    document.getElementById("viewModal").classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+  }
+
+  function closeViewModal() {
+    document.getElementById("viewModal").classList.add("hidden");
+    document.getElementById("viewModal").classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+  }
+
+  function showDeleteModal() {
+    document.getElementById("deleteModal").classList.remove("hidden");
+    document.getElementById("deleteModal").classList.add("flex");
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").classList.add("hidden");
+    document.getElementById("deleteModal").classList.remove("flex");
+    currentPromptId = null;
+  }
+
+  function showSpinner() {
+    document.getElementById("loadingSpinner").classList.remove("hidden");
+    document.getElementById("loadingSpinner").classList.add("flex");
+  }
+
+  function hideSpinner() {
+    document.getElementById("loadingSpinner").classList.add("hidden");
+    document.getElementById("loadingSpinner").classList.remove("flex");
+  }
+
+  function updateCharCount() {
+    const content = document.getElementById("promptContent").value;
+    document.getElementById("charCount").textContent = content.length;
+  }
+
+  function changePerPage() {
+    perPage = parseInt(document.getElementById("perPageSelect").value);
+    currentPage = 1;
+    loadPrompts(currentPage);
+  }
+
+  function refreshPrompts() {
+    loadPrompts(currentPage);
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return "Unknown";
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+  }
+
+  function showSuccess(message) {
+    // You can implement toast notifications here
+    alert("Success: " + message);
+  }
+
+  function showError(message) {
+    // You can implement toast notifications here
+    alert("Error: " + message);
+  }
+</script>
+
+{% endblock %}
