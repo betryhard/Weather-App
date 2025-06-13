@@ -25,6 +25,7 @@ def create_app():
     from app.controllers.google_auth_controller import google_auth_bp, init_oauth
     from app.controllers.weather_controller import weather_bp
     from app.controllers.chatbot_controller import chatbot_bp
+    from app.controllers.favorites_controller import favorites_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -32,6 +33,7 @@ def create_app():
     app.register_blueprint(google_auth_bp)
     app.register_blueprint(weather_bp)
     app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
+    app.register_blueprint(favorites_bp)
     
     # Import message service
     from app.utils.messages import msg
@@ -55,6 +57,7 @@ def create_app():
         from app.models.email_setting import EmailSetting
         from app.models.email_verification import EmailVerification
         from app.models.system_prompt import SystemPrompt
+        from app.models.favorite_location import FavoriteLocation
         
         db.create_all()
         
