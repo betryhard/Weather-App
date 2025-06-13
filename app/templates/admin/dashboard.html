@@ -1,0 +1,2644 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="fixed top-16 left-0 right-0 bottom-0 flex">
+  <div class="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+    <div
+      class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700"
+    >
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-tachometer-alt mr-3"></i>
+        Admin Panel
+      </h3>
+      <p class="text-blue-100 text-sm mt-1">System Management</p>
+    </div>
+    <nav class="flex-1 p-4 space-y-2">
+      <a
+        href="#"
+        onclick="showContent('dashboard'); return false;"
+        class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition duration-200 group"
+        data-section="dashboard"
+      >
+        <i
+          class="fas fa-chart-line mr-3 text-blue-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">Dashboard</span>
+      </a>
+      <a
+        href="#"
+        onclick="showContent('users'); return false;"
+        class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition duration-200 group"
+        data-section="users"
+      >
+        <i
+          class="fas fa-users mr-3 text-green-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">User Manager</span>
+      </a>
+      <a
+        href="#"
+        onclick="showContent('email-settings'); return false;"
+        class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-orange-50 hover:text-orange-700 transition duration-200 group"
+        data-section="email-settings"
+      >
+        <i
+          class="fas fa-envelope mr-3 text-orange-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">Email Settings</span>
+      </a>
+      <a
+        href="#"
+        onclick="showContent('system-prompts'); return false;"
+        class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition duration-200 group"
+        data-section="system-prompts"
+      >
+        <i
+          class="fas fa-robot mr-3 text-indigo-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">System Prompts</span>
+      </a>
+      <!-- <a
+        href="#"
+        onclick="showContent('settings'); return false;"
+        class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-purple-50 hover:text-purple-700 transition duration-200 group"
+        data-section="settings"
+      >
+        <i
+          class="fas fa-cogs mr-3 text-purple-600 w-5 group-hover:scale-110 transition-transform"
+        ></i>
+        <span class="font-medium">Settings</span>
+      </a> -->
+    </nav>
+  </div>
+
+  <!-- Right Content Area - Expanded to full right -->
+  <div
+    class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 overflow-y-auto"
+  >
+    <!-- Dashboard Overview Content -->
+    <div id="dashboard-content" class="content-section p-6">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+        <p class="text-gray-600">System overview and user management</p>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div
+          class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+              <i class="fas fa-users text-2xl"></i>
+            </div>
+            <div class="text-right">
+              <h5 class="text-3xl font-bold">{{ stats.total_users }}</h5>
+              <p class="text-blue-100 text-sm">Total Users</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+              <i class="fas fa-user-check text-2xl"></i>
+            </div>
+            <div class="text-right">
+              <h5 class="text-3xl font-bold">{{ stats.active_users }}</h5>
+              <p class="text-green-100 text-sm">Active Users</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+              <i class="fas fa-user-shield text-2xl"></i>
+            </div>
+            <div class="text-right">
+              <h5 class="text-3xl font-bold">{{ stats.admin_users }}</h5>
+              <p class="text-yellow-100 text-sm">Admin Users</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+              <i class="fas fa-user text-2xl"></i>
+            </div>
+            <div class="text-right">
+              <h5 class="text-3xl font-bold">{{ stats.regular_users }}</h5>
+              <p class="text-purple-100 text-sm">Regular Users</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions and System Info -->
+      <div class="grid lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <div class="p-2 bg-blue-100 rounded-lg mr-3">
+              <i class="fas fa-bolt text-blue-600"></i>
+            </div>
+            Quick Actions
+          </h4>
+          <div class="space-y-4">
+            <button
+              onclick="showContent('users')"
+              class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-4 px-6 rounded-lg transition duration-200 flex items-center justify-center shadow-md"
+            >
+              <i class="fas fa-users mr-3"></i> Manage Users
+            </button>
+            <a
+              href="{{ url_for('admin.api_users') }}"
+              target="_blank"
+              class="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-4 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+            >
+              <i class="fas fa-code mr-3"></i> View API Data
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <div class="p-2 bg-green-100 rounded-lg mr-3">
+              <i class="fas fa-server text-green-600"></i>
+            </div>
+            System Information
+          </h4>
+          <div class="space-y-4">
+            <div
+              class="flex justify-between items-center py-3 border-b border-gray-100"
+            >
+              <span class="font-medium text-gray-700">Database:</span>
+              <span
+                class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"
+                >SQLite</span
+              >
+            </div>
+            <div
+              class="flex justify-between items-center py-3 border-b border-gray-100"
+            >
+              <span class="font-medium text-gray-700">Framework:</span>
+              <span
+                class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium"
+                >Flask</span
+              >
+            </div>
+            <div
+              class="flex justify-between items-center py-3 border-b border-gray-100"
+            >
+              <span class="font-medium text-gray-700">Authentication:</span>
+              <span
+                class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium"
+                >Flask-Login</span
+              >
+            </div>
+            <div class="flex justify-between items-center py-3">
+              <span class="font-medium text-gray-700">Password Security:</span>
+              <span
+                class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium"
+                >bcrypt</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Manager Content -->
+    <div id="users-content" class="content-section p-6" style="display: none">
+      <div class="mb-8">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+              <i class="fas fa-users mr-4 text-green-600"></i>
+              Manage Regular Users
+            </h1>
+            <p class="text-gray-600">
+              Manage regular user accounts (Admin accounts are excluded)
+            </p>
+          </div>
+          <button
+            onclick="openAddUserModal()"
+            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center shadow-md"
+          >
+            <i class="fas fa-plus mr-2"></i>Add New User
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200 mb-4">
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <label class="text-sm font-medium text-gray-700">Show:</label>
+                <select
+                  id="perPageSelect"
+                  onchange="changePerPage()"
+                  class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span class="text-sm text-gray-700">entries</span>
+              </div>
+            </div>
+            <div id="paginationInfo" class="text-sm text-gray-600">
+              Loading...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div id="users-list" class="p-6">
+          <div class="text-center py-12">
+            <div
+              class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
+            ></div>
+            <p class="text-gray-600">Loading users...</p>
+          </div>
+        </div>
+
+        <!-- Pagination Navigation -->
+        <div
+          id="paginationNav"
+          class="px-6 py-4 border-t border-gray-200 flex justify-between items-center"
+        >
+          <button
+            id="prevBtn"
+            onclick="changePage('prev')"
+            disabled
+            class="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <i class="fas fa-chevron-left mr-2"></i>Previous
+          </button>
+
+          <div id="pageNumbers" class="flex space-x-1">
+            <!-- Page numbers will be inserted here -->
+          </div>
+
+          <button
+            id="nextBtn"
+            onclick="changePage('next')"
+            disabled
+            class="flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next<i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div
+      id="userModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
+        <div class="flex justify-between items-center mb-6">
+          <h3 id="modalTitle" class="text-2xl font-bold text-gray-800">
+            Add New User
+          </h3>
+          <button
+            onclick="closeUserModal()"
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <form id="userForm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Username</label
+              >
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Full Name</label
+              >
+              <input
+                type="text"
+                id="fullname"
+                name="fullname"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Phone</label
+              >
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Address</label
+            >
+            <textarea
+              id="current_address"
+              name="current_address"
+              rows="2"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Role</label
+              >
+              <select
+                id="role"
+                name="role"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="user" selected>User</option>
+              </select>
+              <small class="text-gray-500"
+                >Admin accounts are managed separately</small
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Password</label
+              >
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <small id="passwordHelp" class="text-gray-500"
+                >Leave blank to keep current password</small
+              >
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                id="is_active"
+                name="is_active"
+                checked
+                class="mr-2"
+              />
+              <span class="text-sm font-medium text-gray-700">Active User</span>
+            </label>
+          </div>
+
+          <div class="flex justify-end space-x-3">
+            <button
+              type="button"
+              onclick="closeUserModal()"
+              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              <span id="submitBtn">Add User</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Settings Content -->
+    <!-- <div
+      id="settings-content"
+      class="content-section p-6"
+      style="display: none"
+    >
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+          <i class="fas fa-cogs mr-4 text-purple-600"></i>
+          Settings
+        </h1>
+        <p class="text-gray-600">System configuration and preferences</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+        <div class="text-center py-12">
+          <i class="fas fa-tools text-4xl text-gray-400 mb-4"></i>
+          <h3 class="text-xl font-semibold text-gray-600 mb-2">
+            Settings Panel
+          </h3>
+          <p class="text-gray-500">
+            Configuration options will be available here
+          </p>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Email Settings Content -->
+    <div
+      id="email-settings-content"
+      class="content-section p-6"
+      style="display: none"
+    >
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+          <i class="fas fa-envelope mr-4 text-orange-600"></i>
+          Email & SMTP Settings
+        </h1>
+        <p class="text-gray-600">
+          Configure email settings for notifications and account verification
+        </p>
+      </div>
+
+      <!-- Email Settings Cards Grid -->
+      <div class="grid lg:grid-cols-3 gap-6 mb-6">
+        <!-- Quick Stats Card -->
+        <div class="lg:col-span-1">
+          <div
+            class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                <i class="fas fa-server text-2xl"></i>
+              </div>
+              <div class="text-right">
+                <h5 class="text-xl font-bold">SMTP</h5>
+                <p class="text-orange-100 text-sm">Server Config</p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="mt-4 bg-white rounded-xl shadow-lg p-4 border border-gray-200"
+          >
+            <h4
+              class="text-sm font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+              Quick Setup Guide
+            </h4>
+            <div class="space-y-2 text-xs text-gray-600">
+              <div>• <strong>Gmail:</strong> smtp.gmail.com:587</div>
+              <div>• <strong>Outlook:</strong> smtp-mail.outlook.com:587</div>
+              <div>• <strong>Yahoo:</strong> smtp.mail.yahoo.com:587</div>
+              <div>• Always enable TLS for security</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Configuration -->
+        <div class="lg:col-span-2">
+          <!-- Connection Status -->
+          <div id="email-connection-status" class="mb-6 hidden">
+            <div class="rounded-lg p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <div id="email-status-icon"></div>
+                </div>
+                <div class="ml-3">
+                  <h3 id="email-status-title" class="text-sm font-medium"></h3>
+                  <div id="email-status-message" class="mt-2 text-sm"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form id="email-settings-form" class="space-y-6">
+            <!-- SMTP Server Configuration Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+              <div class="p-6">
+                <div class="flex items-center mb-6">
+                  <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                    <i class="fas fa-server text-blue-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-800">
+                      SMTP Server Configuration
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                      Configure your email server connection
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      for="email_smtp_server"
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      SMTP Server *
+                    </label>
+                    <input
+                      type="text"
+                      id="email_smtp_server"
+                      name="smtp_server"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                      placeholder="smtp.gmail.com"
+                      required
+                    />
+                    <p class="text-xs text-gray-500 mt-2">
+                      <i class="fas fa-info-circle mr-1"></i>
+                      e.g., smtp.gmail.com, smtp.outlook.com
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      for="email_smtp_port"
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      SMTP Port *
+                    </label>
+                    <input
+                      type="number"
+                      id="email_smtp_port"
+                      name="smtp_port"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                      placeholder="587"
+                      min="1"
+                      max="65535"
+                      required
+                    />
+                    <p class="text-xs text-gray-500 mt-2">
+                      <i class="fas fa-info-circle mr-1"></i>
+                      Common: 587 (TLS), 465 (SSL), 25 (unsecured)
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      for="email_smtp_username"
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      SMTP Username *
+                    </label>
+                    <input
+                      type="text"
+                      id="email_smtp_username"
+                      name="smtp_username"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                      placeholder="your-email@gmail.com"
+                      required
+                    />
+                    <p class="text-xs text-gray-500 mt-2">
+                      <i class="fas fa-user mr-1"></i>
+                      Usually your email address
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      for="email_smtp_password"
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      SMTP Password
+                    </label>
+                    <input
+                      type="password"
+                      id="email_smtp_password"
+                      name="smtp_password"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                      placeholder="Leave blank to keep current password"
+                    />
+                    <p class="text-xs text-gray-500 mt-2">
+                      <i class="fas fa-key mr-1"></i>
+                      For Gmail, use App Password instead of regular password
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                  <label
+                    class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      id="email_smtp_use_tls"
+                      name="smtp_use_tls"
+                      class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 w-4 h-4"
+                    />
+                    <span class="ml-3 text-sm font-medium text-gray-700">
+                      <i class="fas fa-shield-alt text-green-600 mr-2"></i>
+                      Use TLS Encryption (Recommended)
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Configuration Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+              <div class="p-6">
+                <div class="flex items-center mb-6">
+                  <div class="p-3 bg-green-100 rounded-lg mr-4">
+                    <i class="fas fa-envelope text-green-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-800">
+                      Email Configuration
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                      Set sender information for outgoing emails
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      for="email_sender_email"
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      Sender Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email_sender_email"
+                      name="sender_email"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+                      placeholder="noreply@weather-forecast.com"
+                      required
+                    />
+                    <p class="text-xs text-gray-500 mt-2">
+                      <i class="fas fa-at mr-1"></i>
+                      Email address that appears in "From" field
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      for="email_sender_name"
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      Sender Name
+                    </label>
+                    <input
+                      type="text"
+                      id="email_sender_name"
+                      name="sender_name"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+                      placeholder="Weather Forecast"
+                    />
+                    <p class="text-xs text-gray-500 mt-2">
+                      <i class="fas fa-signature mr-1"></i>
+                      Display name for outgoing emails
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Settings Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+              <div class="p-6">
+                <div class="flex items-center mb-6">
+                  <div class="p-3 bg-purple-100 rounded-lg mr-4">
+                    <i class="fas fa-shield-alt text-purple-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-800">
+                      Security Settings
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                      Configure verification and security options
+                    </p>
+                  </div>
+                </div>
+
+                <div class="max-w-md">
+                  <label
+                    for="email_verification_expires"
+                    class="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Verification Link Expiry (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    id="email_verification_expires"
+                    name="verification_expires_minutes"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200"
+                    min="5"
+                    max="1440"
+                    placeholder="30"
+                  />
+                  <p class="text-xs text-gray-500 mt-2">
+                    <i class="fas fa-clock mr-1"></i>
+                    How long email verification links remain valid (5-1440
+                    minutes)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+              <div class="p-6">
+                <div class="flex items-center mb-6">
+                  <div class="p-3 bg-gray-100 rounded-lg mr-4">
+                    <i class="fas fa-tools text-gray-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-800">
+                      Actions & Testing
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                      Save settings and test your configuration
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4">
+                  <button
+                    type="submit"
+                    class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center shadow-md hover:shadow-lg"
+                  >
+                    <i class="fas fa-save mr-2"></i>
+                    Save Settings
+                  </button>
+
+                  <button
+                    type="button"
+                    id="email-test-connection-btn"
+                    class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center shadow-md hover:shadow-lg"
+                  >
+                    <i class="fas fa-plug mr-2"></i>
+                    Test Connection
+                  </button>
+
+                  <button
+                    type="button"
+                    id="email-send-test-btn"
+                    class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center shadow-md hover:shadow-lg"
+                  >
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Send Test Email
+                  </button>
+
+                  <button
+                    type="button"
+                    id="email-view-logs-btn"
+                    class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center shadow-md hover:shadow-lg"
+                  >
+                    <i class="fas fa-list-alt mr-2"></i>
+                    View Verification Logs
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Prompts Content -->
+    <div
+      id="system-prompts-content"
+      class="content-section p-6"
+      style="display: none"
+    >
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+          <i class="fas fa-robot mr-4 text-indigo-600"></i>
+          System Prompt Management
+        </h1>
+        <p class="text-gray-600">
+          Configure and manage AI chatbot system prompts for different behaviors
+        </p>
+      </div>
+
+      <!-- System Prompts Table -->
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+              <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                <i class="fas fa-robot text-indigo-600"></i>
+              </div>
+              Prompt Library
+            </h2>
+            <div class="flex space-x-3">
+              <button
+                onclick="createSystemPrompt()"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center shadow-md"
+              >
+                <i class="fas fa-plus mr-2"></i>New Prompt
+              </button>
+              <select
+                id="systemPromptsPerPageSelect"
+                onchange="changeSystemPromptsPerPage()"
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="5">5 per page</option>
+                <option value="10" selected>10 per page</option>
+                <option value="25">25 per page</option>
+                <option value="50">50 per page</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Name & Description
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Creator
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Created
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="system-prompts-table-body"
+              class="bg-white divide-y divide-gray-200"
+            >
+              <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                  <div class="flex flex-col items-center">
+                    <div
+                      class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-4"
+                    ></div>
+                    <p class="text-lg font-medium">Loading system prompts...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div
+          id="system-prompts-pagination-container"
+          class="px-6 py-4 border-t border-gray-200 bg-gray-50"
+        >
+          <!-- Pagination will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Test Email Modal -->
+<div
+  id="email-test-modal"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+>
+  <div
+    class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+  >
+    <div class="mt-3">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Send Test Email</h3>
+      <div class="mb-4">
+        <label
+          for="email-test-address"
+          class="block text-sm font-medium text-gray-700 mb-2"
+          >Email Address</label
+        >
+        <input
+          type="email"
+          id="email-test-address"
+          class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="test@example.com"
+        />
+      </div>
+      <div class="flex gap-3">
+        <button
+          id="email-send-test-btn-modal"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex-1"
+        >
+          Send Test
+        </button>
+        <button
+          id="email-cancel-test-btn"
+          class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Verification Logs Modal -->
+<div
+  id="verification-logs-modal"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+>
+  <div
+    class="relative top-10 mx-auto p-5 border w-full max-w-6xl shadow-lg rounded-md bg-white"
+  >
+    <div class="mt-3">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-medium text-gray-900">
+          📋 Email Verification Logs
+        </h3>
+        <button
+          id="verification-logs-close-btn"
+          class="text-gray-400 hover:text-gray-600 text-xl"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Status info -->
+      <div id="verification-logs-status" class="mb-4 hidden">
+        <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+          <p class="text-sm text-blue-700" id="verification-logs-info"></p>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="verification-logs-loading" class="text-center py-8">
+        <div
+          class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"
+        ></div>
+        <p class="text-gray-600">Loading verification logs...</p>
+      </div>
+
+      <!-- Logs content -->
+      <div id="verification-logs-content" class="hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ID
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Email
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Google User
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Created
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Expires
+                </th>
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Verified
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="verification-logs-tbody"
+              class="bg-white divide-y divide-gray-200"
+            >
+              <!-- Table rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty state -->
+        <div id="verification-logs-empty" class="text-center py-8 hidden">
+          <div class="text-gray-400 mb-4">
+            <i class="fas fa-inbox text-4xl"></i>
+          </div>
+          <h3 class="text-lg font-medium text-gray-700 mb-2">
+            No Verification Logs
+          </h3>
+          <p class="text-gray-500">
+            No email verification attempts have been recorded yet.
+          </p>
+        </div>
+      </div>
+
+      <!-- Modal actions -->
+      <div class="flex justify-end mt-6 pt-4 border-t border-gray-200">
+        <button
+          id="verification-logs-refresh-btn"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg mr-3"
+        >
+          🔄 Refresh
+        </button>
+        <button
+          id="verification-logs-close-btn-2"
+          class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit System Prompt Modal -->
+<div
+  id="systemPromptModal"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div
+    class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex justify-between items-center">
+        <h2
+          id="systemPromptModalTitle"
+          class="text-2xl font-bold text-gray-800"
+        >
+          Create New System Prompt
+        </h2>
+        <button
+          onclick="closeSystemPromptModal()"
+          class="text-gray-400 hover:text-gray-600 text-2xl"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <form id="systemPromptForm" class="p-6 space-y-6">
+      <input type="hidden" id="systemPromptId" value="" />
+
+      <div>
+        <label
+          for="systemPromptName"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Prompt Name <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="systemPromptName"
+          required
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          placeholder="e.g., Weather Assistant v2.0"
+        />
+      </div>
+
+      <div>
+        <label
+          for="systemPromptDescription"
+          class="block text-sm font-medium text-gray-700 mb-2"
+          >Description</label
+        >
+        <input
+          type="text"
+          id="systemPromptDescription"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          placeholder="Brief description of this prompt's purpose"
+        />
+      </div>
+
+      <div>
+        <label
+          for="systemPromptContent"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          System Prompt Content <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <textarea
+            id="systemPromptContent"
+            required
+            rows="15"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono text-sm"
+            placeholder="Enter the complete system prompt for the AI chatbot..."
+          ></textarea>
+          <div class="absolute bottom-3 right-3 text-xs text-gray-500">
+            <span id="systemPromptCharCount">0</span> characters
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">
+          <i class="fas fa-info-circle mr-1"></i>
+          This prompt will define how the AI chatbot behaves and responds to
+          users
+        </p>
+      </div>
+
+      <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          onclick="closeSystemPromptModal()"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200 flex items-center"
+        >
+          <i class="fas fa-save mr-2"></i>
+          <span id="systemPromptSubmitText">Create Prompt</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View System Prompt Modal -->
+<div
+  id="viewSystemPromptModal"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div
+    class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-800">View System Prompt</h2>
+        <button
+          onclick="closeViewSystemPromptModal()"
+          class="text-gray-400 hover:text-gray-600 text-2xl"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Name</label
+          >
+          <p
+            id="viewSystemPromptName"
+            class="text-lg font-semibold text-gray-900"
+          ></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Description</label
+          >
+          <p id="viewSystemPromptDescription" class="text-gray-700"></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Status</label
+          >
+          <span
+            id="viewSystemPromptStatus"
+            class="inline-block px-3 py-1 rounded-full text-sm font-medium"
+          ></span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >System Prompt Content</label
+        >
+        <div
+          class="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-80 overflow-y-auto"
+        >
+          <pre
+            id="viewSystemPromptContent"
+            class="whitespace-pre-wrap font-mono text-sm text-gray-800"
+          ></pre>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-6"
+      >
+        <button
+          onclick="closeViewSystemPromptModal()"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete System Prompt Confirmation Modal -->
+<div
+  id="deleteSystemPromptModal"
+  class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+    <div class="p-6">
+      <div class="flex items-center mb-4">
+        <div
+          class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-4"
+        >
+          <i class="fas fa-exclamation-triangle text-red-600"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900">Delete System Prompt</h3>
+      </div>
+      <p class="text-gray-500 mb-6">
+        Are you sure you want to delete "<span
+          id="deleteSystemPromptName"
+          class="font-medium"
+        ></span
+        >"? This action cannot be undone.
+      </p>
+      <div class="flex justify-end space-x-4">
+        <button
+          onclick="closeDeleteSystemPromptModal()"
+          class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          onclick="confirmDeleteSystemPrompt()"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let editingUserId = null;
+  let currentPage = 1;
+  let currentPerPage = 10;
+  let totalPages = 1;
+  let paginationData = {};
+
+  // System prompts variables
+  let currentSystemPromptPage = 1;
+  let currentSystemPromptPerPage = 10;
+  let editingSystemPromptId = null;
+
+  function showContent(section) {
+    // Hide all content sections
+    const sections = document.querySelectorAll(".content-section");
+    sections.forEach((section) => {
+      section.style.display = "none";
+    });
+
+    // Remove active class from all menu items
+    const menuItems = document.querySelectorAll(".menu-item");
+    menuItems.forEach((item) => {
+      item.classList.remove(
+        "bg-blue-100",
+        "text-blue-800",
+        "shadow-md",
+        "scale-105"
+      );
+      item.classList.add("text-gray-700");
+    });
+
+    // Show selected content
+    const selectedContent = document.getElementById(section + "-content");
+    if (selectedContent) {
+      selectedContent.style.display = "block";
+    }
+
+    // Highlight active menu item
+    const activeMenuItem = document.querySelector(
+      `[data-section="${section}"]`
+    );
+    if (activeMenuItem) {
+      activeMenuItem.classList.remove("text-gray-700");
+      activeMenuItem.classList.add(
+        "bg-blue-100",
+        "text-blue-800",
+        "shadow-md",
+        "scale-105"
+      );
+    }
+
+    // Load content for users section
+    if (section === "users") {
+      loadUsers();
+    }
+
+    // Load content for email settings section
+    if (section === "email-settings") {
+      loadEmailSettings();
+    }
+
+    // Load content for system prompts section
+    if (section === "system-prompts") {
+      loadSystemPrompts();
+    }
+  }
+
+  function loadUsers(page = 1, perPage = null) {
+    if (perPage === null) {
+      perPage = currentPerPage;
+    }
+
+    currentPage = page;
+    currentPerPage = perPage;
+
+    const usersList = document.getElementById("users-list");
+
+    // Show loading
+    usersList.innerHTML = `
+    <div class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading users...</p>
+    </div>
+  `;
+
+    fetch(`{{ url_for("admin.api_users") }}?page=${page}&per_page=${perPage}`)
+      .then((response) => response.json())
+      .then((data) => {
+        paginationData = data.pagination;
+        totalPages = data.pagination.pages;
+
+        let html = `
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Username</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Full Name</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+      `;
+
+        data.users.forEach((user) => {
+          const roleClass =
+            user.role === "admin"
+              ? "bg-green-100 text-green-800"
+              : "bg-blue-100 text-blue-800";
+          const statusClass = user.is_active
+            ? "bg-green-100 text-green-800"
+            : "bg-red-100 text-red-800";
+          const statusText = user.is_active ? "Active" : "Inactive";
+
+          html += `
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 text-sm text-gray-900 font-medium">${
+              user.id
+            }</td>
+            <td class="px-6 py-4 text-sm font-semibold text-gray-900">${
+              user.username
+            }</td>
+            <td class="px-6 py-4 text-sm text-gray-700">${user.fullname}</td>
+            <td class="px-6 py-4 text-sm text-gray-700">${user.email}</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${roleClass}">
+                ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}">
+                ${statusText}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex space-x-2">
+                <button onclick="editUser(${user.id})" 
+                  class="text-blue-600 hover:text-blue-800 p-1" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="toggleUserStatus(${user.id})" 
+                  class="text-yellow-600 hover:text-yellow-800 p-1" title="Toggle Status">
+                  <i class="fas fa-toggle-${user.is_active ? "on" : "off"}"></i>
+                </button>
+                <button onclick="deleteUser(${user.id})" 
+                  class="text-red-600 hover:text-red-800 p-1" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+        });
+
+        html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+        usersList.innerHTML = html;
+        updatePaginationInfo();
+        updatePaginationNav();
+      })
+      .catch((error) => {
+        console.error("Error loading users:", error);
+        usersList.innerHTML = `
+        <div class="text-center py-12">
+          <div class="text-red-600 mb-4">
+            <i class="fas fa-exclamation-triangle text-5xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-red-700 mb-2">Error Loading Users</h3>
+          <p class="text-red-600">Please try again later.</p>
+        </div>
+      `;
+      });
+  }
+
+  function updatePaginationInfo() {
+    const paginationInfo = document.getElementById("paginationInfo");
+    const start = (paginationData.page - 1) * paginationData.per_page + 1;
+    const end = Math.min(
+      paginationData.page * paginationData.per_page,
+      paginationData.total
+    );
+
+    paginationInfo.innerHTML = `
+    Showing ${start}-${end} of ${paginationData.total} users 
+    (Page ${paginationData.page} of ${paginationData.pages})
+  `;
+  }
+
+  function updatePaginationNav() {
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const pageNumbers = document.getElementById("pageNumbers");
+
+    // Update prev/next buttons
+    prevBtn.disabled = !paginationData.has_prev;
+    nextBtn.disabled = !paginationData.has_next;
+
+    if (paginationData.has_prev) {
+      prevBtn.classList.remove("text-gray-500");
+      prevBtn.classList.add("text-blue-600", "hover:text-blue-800");
+    } else {
+      prevBtn.classList.add("text-gray-500");
+      prevBtn.classList.remove("text-blue-600", "hover:text-blue-800");
+    }
+
+    if (paginationData.has_next) {
+      nextBtn.classList.remove("text-gray-500");
+      nextBtn.classList.add("text-blue-600", "hover:text-blue-800");
+    } else {
+      nextBtn.classList.add("text-gray-500");
+      nextBtn.classList.remove("text-blue-600", "hover:text-blue-800");
+    }
+
+    // Generate page numbers
+    let pageNumbersHtml = "";
+    const currentPage = paginationData.page;
+    const totalPages = paginationData.pages;
+
+    // Calculate page range to show
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+
+    // Always show first page
+    if (startPage > 1) {
+      pageNumbersHtml += `
+      <button onclick="goToPage(1)" class="px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800">1</button>
+    `;
+      if (startPage > 2) {
+        pageNumbersHtml += `<span class="px-2 py-2 text-sm text-gray-500">...</span>`;
+      }
+    }
+
+    // Show page range
+    for (let i = startPage; i <= endPage; i++) {
+      if (i === currentPage) {
+        pageNumbersHtml += `
+        <button class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md">${i}</button>
+      `;
+      } else {
+        pageNumbersHtml += `
+        <button onclick="goToPage(${i})" class="px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md">${i}</button>
+      `;
+      }
+    }
+
+    // Always show last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbersHtml += `<span class="px-2 py-2 text-sm text-gray-500">...</span>`;
+      }
+      pageNumbersHtml += `
+      <button onclick="goToPage(${totalPages})" class="px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800">${totalPages}</button>
+    `;
+    }
+
+    pageNumbers.innerHTML = pageNumbersHtml;
+  }
+
+  function changePage(direction) {
+    if (direction === "prev" && paginationData.has_prev) {
+      loadUsers(paginationData.prev_num, currentPerPage);
+    } else if (direction === "next" && paginationData.has_next) {
+      loadUsers(paginationData.next_num, currentPerPage);
+    }
+  }
+
+  function goToPage(page) {
+    loadUsers(page, currentPerPage);
+  }
+
+  function changePerPage() {
+    const perPageSelect = document.getElementById("perPageSelect");
+    const newPerPage = parseInt(perPageSelect.value);
+    loadUsers(1, newPerPage); // Reset to page 1 when changing per page
+  }
+
+  function openAddUserModal() {
+    editingUserId = null;
+    document.getElementById("modalTitle").textContent = "Add New User";
+    document.getElementById("submitBtn").textContent = "Add User";
+    document.getElementById("passwordHelp").style.display = "none";
+    document.getElementById("password").required = true;
+    document.getElementById("userForm").reset();
+    document.getElementById("userModal").classList.remove("hidden");
+  }
+
+  function editUser(userId) {
+    fetch(`{{ url_for("admin.api_users") }}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Find user in current page data first, then search all if needed
+        let user = data.users ? data.users.find((u) => u.id === userId) : null;
+
+        if (!user) {
+          // If not found in current page, search all regular users
+          fetch(`{{ url_for("admin.api_users") }}?per_page=1000`)
+            .then((response) => response.json())
+            .then((allData) => {
+              user = allData.users.find((u) => u.id === userId);
+              if (user) {
+                populateEditForm(user);
+              }
+            });
+        } else {
+          populateEditForm(user);
+        }
+      });
+  }
+
+  function populateEditForm(user) {
+    editingUserId = user.id;
+    document.getElementById("modalTitle").textContent = "Edit User";
+    document.getElementById("submitBtn").textContent = "Update User";
+    document.getElementById("passwordHelp").style.display = "block";
+    document.getElementById("password").required = false;
+
+    // Fill form with user data
+    document.getElementById("username").value = user.username;
+    document.getElementById("email").value = user.email;
+    document.getElementById("fullname").value = user.fullname;
+    document.getElementById("phone").value = user.phone || "";
+    document.getElementById("current_address").value =
+      user.current_address || "";
+    document.getElementById("role").value = user.role;
+    document.getElementById("is_active").checked = user.is_active;
+    document.getElementById("password").value = "";
+
+    document.getElementById("userModal").classList.remove("hidden");
+  }
+
+  function closeUserModal() {
+    document.getElementById("userModal").classList.add("hidden");
+    editingUserId = null;
+  }
+
+  function toggleUserStatus(userId) {
+    if (confirm("Are you sure you want to toggle this user's status?")) {
+      fetch(`{{ url_for("admin.api_users") }}/${userId}/toggle-status`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            alert("Error: " + data.error);
+          } else {
+            alert(data.message);
+            loadUsers(currentPage, currentPerPage);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred while toggling user status.");
+        });
+    }
+  }
+
+  function deleteUser(userId) {
+    if (
+      confirm(
+        "Are you sure you want to delete this user? This action cannot be undone."
+      )
+    ) {
+      fetch(`{{ url_for("admin.api_users") }}/${userId}`, {
+        method: "DELETE",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            alert("Error: " + data.error);
+          } else {
+            alert(data.message);
+            loadUsers(currentPage, currentPerPage);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred while deleting the user.");
+        });
+    }
+  }
+
+  // Handle form submission
+  document.getElementById("userForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const userData = {
+      username: formData.get("username"),
+      email: formData.get("email"),
+      fullname: formData.get("fullname"),
+      phone: formData.get("phone"),
+      current_address: formData.get("current_address"),
+      role: formData.get("role"),
+      is_active: formData.has("is_active"),
+    };
+
+    const password = formData.get("password");
+    if (password) {
+      userData.password = password;
+    }
+
+    const url = editingUserId
+      ? `{{ url_for("admin.api_users") }}/${editingUserId}`
+      : '{{ url_for("admin.api_users") }}';
+    const method = editingUserId ? "PUT" : "POST";
+
+    fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert("Error: " + data.error);
+        } else {
+          alert(
+            editingUserId
+              ? "User updated successfully!"
+              : "User created successfully!"
+          );
+          closeUserModal();
+          loadUsers(currentPage, currentPerPage);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("An error occurred while saving the user.");
+      });
+  });
+
+  // Email Settings Functions
+  function loadEmailSettings() {
+    fetch('{{ url_for("admin.get_email_settings") }}')
+      .then((response) => response.text())
+      .then((html) => {
+        fetch('{{ url_for("admin.get_email_settings") }}')
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              populateEmailSettings(data.settings);
+            }
+          })
+          .catch((error) => console.log("Settings not available yet"));
+      });
+  }
+
+  function populateEmailSettings(settings) {
+    if (!settings) return;
+
+    document.getElementById("email_smtp_server").value =
+      settings.smtp_server || "";
+    document.getElementById("email_smtp_port").value =
+      settings.smtp_port || "587";
+    document.getElementById("email_smtp_username").value =
+      settings.smtp_username || "";
+    document.getElementById("email_sender_email").value =
+      settings.sender_email || "";
+    document.getElementById("email_sender_name").value =
+      settings.sender_name || "Weather Forecast";
+    document.getElementById("email_verification_expires").value =
+      settings.verification_expires_minutes || "30";
+    document.getElementById("email_smtp_use_tls").checked =
+      settings.smtp_use_tls || false;
+  }
+
+  function showEmailStatus(type, title, message) {
+    const statusDiv = document.getElementById("email-connection-status");
+    const iconDiv = document.getElementById("email-status-icon");
+    const titleDiv = document.getElementById("email-status-title");
+    const messageDiv = document.getElementById("email-status-message");
+
+    statusDiv.className =
+      "mb-6 mx-6 mt-6 rounded-md p-4 " +
+      (type === "success" ? "bg-green-50" : "bg-red-50");
+    titleDiv.className =
+      "text-sm font-medium " +
+      (type === "success" ? "text-green-800" : "text-red-800");
+    messageDiv.className =
+      "mt-2 text-sm " +
+      (type === "success" ? "text-green-700" : "text-red-700");
+    iconDiv.innerHTML = type === "success" ? "✅" : "❌";
+
+    titleDiv.textContent = title;
+    messageDiv.textContent = message;
+    statusDiv.classList.remove("hidden");
+  }
+
+  // Verification Logs Modal Functions
+  function openVerificationLogsModal() {
+    const modal = document.getElementById("verification-logs-modal");
+    modal.classList.remove("hidden");
+    loadVerificationLogs();
+  }
+
+  function closeVerificationLogsModal() {
+    const modal = document.getElementById("verification-logs-modal");
+    modal.classList.add("hidden");
+  }
+
+  function loadVerificationLogs() {
+    const loading = document.getElementById("verification-logs-loading");
+    const content = document.getElementById("verification-logs-content");
+    const empty = document.getElementById("verification-logs-empty");
+    const tbody = document.getElementById("verification-logs-tbody");
+    const status = document.getElementById("verification-logs-status");
+    const statusInfo = document.getElementById("verification-logs-info");
+
+    // Show loading state
+    loading.classList.remove("hidden");
+    content.classList.add("hidden");
+    status.classList.add("hidden");
+
+    fetch('{{ url_for("admin.api_verification_logs") }}')
+      .then((response) => response.json())
+      .then((data) => {
+        loading.classList.add("hidden");
+
+        if (data.success) {
+          const verifications = data.verifications;
+
+          // Show status info if any tokens were cleaned
+          if (data.cleaned_count > 0) {
+            statusInfo.textContent = `Cleaned up ${data.cleaned_count} expired verification tokens.`;
+            status.classList.remove("hidden");
+          }
+
+          if (verifications.length === 0) {
+            empty.classList.remove("hidden");
+            content.classList.add("hidden");
+          } else {
+            empty.classList.add("hidden");
+            content.classList.remove("hidden");
+
+            // Populate table
+            tbody.innerHTML = "";
+            verifications.forEach((verification) => {
+              const statusClass = getStatusClass(verification.status);
+              const statusIcon = getStatusIcon(verification.status);
+
+              const row = document.createElement("tr");
+              row.className = "hover:bg-gray-50";
+              row.innerHTML = `
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+                  verification.id
+                }</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">${
+                  verification.email
+                }</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <div class="flex items-center">
+                    ${
+                      verification.google_picture
+                        ? `<img src="${verification.google_picture}" alt="Avatar" class="w-6 h-6 rounded-full mr-2">`
+                        : '<div class="w-6 h-6 bg-gray-300 rounded-full mr-2 flex items-center justify-center text-xs">👤</div>'
+                    }
+                    <span>${verification.google_name}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+                    ${statusIcon} ${verification.status}
+                  </span>
+                </td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">${
+                  verification.created_at
+                }</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">${
+                  verification.expires_at
+                }</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">
+                  ${
+                    verification.verified_at
+                      ? verification.verified_at
+                      : '<span class="text-gray-400">—</span>'
+                  }
+                </td>
+              `;
+              tbody.appendChild(row);
+            });
+          }
+        } else {
+          // Show error state
+          content.classList.remove("hidden");
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="px-4 py-8 text-center text-red-600">
+                <div class="text-red-400 mb-2">
+                  <i class="fas fa-exclamation-triangle text-2xl"></i>
+                </div>
+                Error loading verification logs: ${data.message}
+              </td>
+            </tr>
+          `;
+        }
+      })
+      .catch((error) => {
+        loading.classList.add("hidden");
+        content.classList.remove("hidden");
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-red-600">
+              <div class="text-red-400 mb-2">
+                <i class="fas fa-exclamation-triangle text-2xl"></i>
+              </div>
+              Failed to load verification logs: ${error.message}
+            </td>
+          </tr>
+        `;
+      });
+  }
+
+  function getStatusClass(status) {
+    switch (status) {
+      case "Verified":
+        return "bg-green-100 text-green-800";
+      case "Expired":
+        return "bg-red-100 text-red-800";
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  }
+
+  function getStatusIcon(status) {
+    switch (status) {
+      case "Verified":
+        return "✅";
+      case "Expired":
+        return "❌";
+      case "Pending":
+        return "⏳";
+      default:
+        return "❓";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    showContent("dashboard");
+
+    // Email Settings Event Listeners
+    const emailSettingsForm = document.getElementById("email-settings-form");
+    if (emailSettingsForm) {
+      emailSettingsForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const emailData = {
+          smtp_server: formData.get("smtp_server"),
+          smtp_port: formData.get("smtp_port"),
+          smtp_username: formData.get("smtp_username"),
+          smtp_password: formData.get("smtp_password"),
+          smtp_use_tls: formData.has("smtp_use_tls"),
+          sender_email: formData.get("sender_email"),
+          sender_name: formData.get("sender_name"),
+          verification_expires_minutes: formData.get(
+            "verification_expires_minutes"
+          ),
+        };
+
+        fetch('{{ url_for("admin.email_settings") }}', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams(emailData),
+        })
+          .then((response) => response.text())
+          .then((html) => {
+            showEmailStatus(
+              "success",
+              "Settings Saved",
+              "Email settings updated successfully!"
+            );
+          })
+          .catch((error) => {
+            showEmailStatus(
+              "error",
+              "Save Failed",
+              "Failed to save email settings: " + error.message
+            );
+          });
+      });
+    }
+
+    // Test Connection Button
+    const testConnectionBtn = document.getElementById(
+      "email-test-connection-btn"
+    );
+    if (testConnectionBtn) {
+      testConnectionBtn.addEventListener("click", function () {
+        this.disabled = true;
+        this.textContent = "🔄 Testing...";
+
+        fetch('{{ url_for("admin.test_email_connection") }}', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              showEmailStatus("success", "Connection Successful", data.message);
+            } else {
+              showEmailStatus("error", "Connection Failed", data.message);
+            }
+          })
+          .catch((error) => {
+            showEmailStatus(
+              "error",
+              "Connection Error",
+              "Failed to test connection: " + error.message
+            );
+          })
+          .finally(() => {
+            this.disabled = false;
+            this.textContent = "🔌 Test Connection";
+          });
+      });
+    }
+
+    // Send Test Email Button
+    const sendTestEmailBtn = document.getElementById("email-send-test-btn");
+    const testEmailModal = document.getElementById("email-test-modal");
+    const sendTestBtnModal = document.getElementById(
+      "email-send-test-btn-modal"
+    );
+    const cancelTestBtn = document.getElementById("email-cancel-test-btn");
+
+    if (sendTestEmailBtn) {
+      sendTestEmailBtn.addEventListener("click", function () {
+        testEmailModal.classList.remove("hidden");
+      });
+    }
+
+    if (cancelTestBtn) {
+      cancelTestBtn.addEventListener("click", function () {
+        testEmailModal.classList.add("hidden");
+        document.getElementById("email-test-address").value = "";
+      });
+    }
+
+    if (sendTestBtnModal) {
+      sendTestBtnModal.addEventListener("click", function () {
+        const email = document.getElementById("email-test-address").value;
+        if (!email) {
+          alert("Please enter an email address");
+          return;
+        }
+
+        this.disabled = true;
+        this.textContent = "📤 Sending...";
+
+        fetch('{{ url_for("admin.send_test_email") }}', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: email }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              showEmailStatus("success", "Test Email Sent", data.message);
+              testEmailModal.classList.add("hidden");
+              document.getElementById("email-test-address").value = "";
+            } else {
+              showEmailStatus(
+                "error",
+                "Failed to Send Test Email",
+                data.message
+              );
+            }
+          })
+          .catch((error) => {
+            showEmailStatus(
+              "error",
+              "Email Error",
+              "Failed to send test email: " + error.message
+            );
+          })
+          .finally(() => {
+            this.disabled = false;
+            this.textContent = "Send Test";
+          });
+      });
+    }
+
+    // Verification Logs Modal Event Listeners
+    const viewLogsBtn = document.getElementById("email-view-logs-btn");
+    const verificationLogsModal = document.getElementById(
+      "verification-logs-modal"
+    );
+    const closeLogsBtn = document.getElementById("verification-logs-close-btn");
+    const closeLogsBtn2 = document.getElementById(
+      "verification-logs-close-btn-2"
+    );
+    const refreshLogsBtn = document.getElementById(
+      "verification-logs-refresh-btn"
+    );
+
+    if (viewLogsBtn) {
+      viewLogsBtn.addEventListener("click", openVerificationLogsModal);
+    }
+
+    if (closeLogsBtn) {
+      closeLogsBtn.addEventListener("click", closeVerificationLogsModal);
+    }
+
+    if (closeLogsBtn2) {
+      closeLogsBtn2.addEventListener("click", closeVerificationLogsModal);
+    }
+
+    if (refreshLogsBtn) {
+      refreshLogsBtn.addEventListener("click", loadVerificationLogs);
+    }
+
+    // Close modal when clicking outside
+    if (verificationLogsModal) {
+      verificationLogsModal.addEventListener("click", function (e) {
+        if (e.target === verificationLogsModal) {
+          closeVerificationLogsModal();
+        }
+      });
+    }
+
+    // System Prompts Form Submission
+    const systemPromptForm = document.getElementById("systemPromptForm");
+    if (systemPromptForm) {
+      systemPromptForm.addEventListener("submit", handleSystemPromptSubmit);
+    }
+
+    // System Prompt Content Character Counter
+    const systemPromptContent = document.getElementById("systemPromptContent");
+    if (systemPromptContent) {
+      systemPromptContent.addEventListener(
+        "input",
+        updateSystemPromptCharCount
+      );
+    }
+  });
+</script>
+
+<script>
+  // System Prompts Functions
+  async function loadSystemPrompts(page = 1) {
+    try {
+      currentSystemPromptPage = page;
+      const response = await fetch(
+        `/admin/api/system-prompts?page=${page}&per_page=${currentSystemPromptPerPage}`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        renderSystemPromptsTable(data.prompts);
+        renderSystemPromptsPagination(data.pagination);
+      } else {
+        showSystemPromptsError("Failed to load system prompts");
+      }
+    } catch (error) {
+      console.error("Error loading system prompts:", error);
+      showSystemPromptsError("Network error while loading system prompts");
+    }
+  }
+
+  function renderSystemPromptsTable(prompts) {
+    const tbody = document.getElementById("system-prompts-table-body");
+
+    if (prompts.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-robot text-4xl text-gray-300 mb-4"></i>
+              <p class="text-lg font-medium">No system prompts found</p>
+              <p class="text-sm">Create your first prompt to get started</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = prompts
+      .map(
+        (prompt) => `
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 whitespace-nowrap">
+          ${
+            prompt.is_active
+              ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-check mr-1"></i>Active</span>'
+              : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Inactive</span>'
+          }
+        </td>
+        <td class="px-6 py-4">
+          <div class="text-sm font-medium text-gray-900">${escapeHtmlText(
+            prompt.name
+          )}</div>
+          <div class="text-sm text-gray-500">${escapeHtmlText(
+            prompt.description || "No description"
+          )}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          ${escapeHtmlText(prompt.creator_username || "Unknown")}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          ${formatDateTime(prompt.created_at)}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+          <button onclick="viewSystemPrompt(${prompt.id})" 
+                  class="text-blue-600 hover:text-blue-900 p-1" title="View">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button onclick="editSystemPrompt(${prompt.id})" 
+                  class="text-yellow-600 hover:text-yellow-900 p-1" title="Edit">
+            <i class="fas fa-edit"></i>
+          </button>
+          ${
+            !prompt.is_active
+              ? `
+            <button onclick="activateSystemPrompt(${prompt.id})" 
+                    class="text-green-600 hover:text-green-900 p-1" title="Activate">
+              <i class="fas fa-play"></i>
+            </button>
+          `
+              : ""
+          }
+          <button onclick="deleteSystemPrompt(${prompt.id}, '${escapeHtmlText(
+          prompt.name
+        )}')" 
+                  class="text-red-600 hover:text-red-900 p-1" title="Delete">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `
+      )
+      .join("");
+  }
+
+  function renderSystemPromptsPagination(pagination) {
+    const container = document.getElementById(
+      "system-prompts-pagination-container"
+    );
+
+    if (pagination.pages <= 1) {
+      container.innerHTML = "";
+      return;
+    }
+
+    let paginationHTML = `
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+          Showing ${(pagination.page - 1) * pagination.per_page + 1} to 
+          ${Math.min(
+            pagination.page * pagination.per_page,
+            pagination.total
+          )} of 
+          ${pagination.total} results
+        </div>
+        <div class="flex space-x-1">
+    `;
+
+    // Previous button
+    if (pagination.has_prev) {
+      paginationHTML += `
+        <button onclick="loadSystemPrompts(${pagination.prev_num})" 
+                class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+          Previous
+        </button>
+      `;
+    }
+
+    // Page numbers
+    const startPage = Math.max(1, pagination.page - 2);
+    const endPage = Math.min(pagination.pages, pagination.page + 2);
+
+    for (let i = startPage; i <= endPage; i++) {
+      const isActive = i === pagination.page;
+      paginationHTML += `
+        <button onclick="loadSystemPrompts(${i})" 
+                class="px-3 py-2 text-sm border ${
+                  isActive
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "border-gray-300 hover:bg-gray-50"
+                } rounded-lg">
+          ${i}
+        </button>
+      `;
+    }
+
+    // Next button
+    if (pagination.has_next) {
+      paginationHTML += `
+        <button onclick="loadSystemPrompts(${pagination.next_num})" 
+                class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+          Next
+        </button>
+      `;
+    }
+
+    paginationHTML += `</div></div>`;
+    container.innerHTML = paginationHTML;
+  }
+
+  // Modal Functions
+  function createSystemPrompt() {
+    editingSystemPromptId = null;
+    document.getElementById("systemPromptModalTitle").textContent =
+      "Create New System Prompt";
+    document.getElementById("systemPromptSubmitText").textContent =
+      "Create Prompt";
+    document.getElementById("systemPromptForm").reset();
+    document.getElementById("systemPromptId").value = "";
+    updateSystemPromptCharCount();
+    showSystemPromptModal();
+  }
+
+  function editSystemPrompt(id) {
+    fetch(`/admin/api/system-prompts`)
+      .then((response) => response.json())
+      .then((data) => {
+        const prompt = data.prompts.find((p) => p.id === id);
+        if (prompt) {
+          editingSystemPromptId = id;
+          document.getElementById("systemPromptModalTitle").textContent =
+            "Edit System Prompt";
+          document.getElementById("systemPromptSubmitText").textContent =
+            "Update Prompt";
+          document.getElementById("systemPromptId").value = prompt.id;
+          document.getElementById("systemPromptName").value = prompt.name;
+          document.getElementById("systemPromptDescription").value =
+            prompt.description || "";
+          document.getElementById("systemPromptContent").value =
+            prompt.prompt_content;
+          updateSystemPromptCharCount();
+          showSystemPromptModal();
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching prompt:", error);
+        alert("Failed to load prompt data");
+      });
+  }
+
+  function viewSystemPrompt(id) {
+    fetch(`/admin/api/system-prompts`)
+      .then((response) => response.json())
+      .then((data) => {
+        const prompt = data.prompts.find((p) => p.id === id);
+        if (prompt) {
+          document.getElementById("viewSystemPromptName").textContent =
+            prompt.name;
+          document.getElementById("viewSystemPromptDescription").textContent =
+            prompt.description || "No description";
+          document.getElementById("viewSystemPromptContent").textContent =
+            prompt.prompt_content;
+
+          const statusElement = document.getElementById(
+            "viewSystemPromptStatus"
+          );
+          if (prompt.is_active) {
+            statusElement.className =
+              "inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800";
+            statusElement.innerHTML = '<i class="fas fa-check mr-1"></i>Active';
+          } else {
+            statusElement.className =
+              "inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800";
+            statusElement.textContent = "Inactive";
+          }
+
+          showViewSystemPromptModal();
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching prompt:", error);
+        alert("Failed to load prompt data");
+      });
+  }
+
+  function deleteSystemPrompt(id, name) {
+    editingSystemPromptId = id;
+    document.getElementById("deleteSystemPromptName").textContent = name;
+    showDeleteSystemPromptModal();
+  }
+
+  async function activateSystemPrompt(id) {
+    try {
+      const response = await fetch(`/admin/api/system-prompts/${id}/activate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+        loadSystemPrompts(currentSystemPromptPage);
+      } else {
+        alert("Error: " + (data.error || "Failed to activate prompt"));
+      }
+    } catch (error) {
+      console.error("Error activating prompt:", error);
+      alert("Network error while activating prompt");
+    }
+  }
+
+  async function confirmDeleteSystemPrompt() {
+    try {
+      const response = await fetch(
+        `/admin/api/system-prompts/${editingSystemPromptId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+        closeDeleteSystemPromptModal();
+        loadSystemPrompts(currentSystemPromptPage);
+      } else {
+        alert("Error: " + (data.error || "Failed to delete prompt"));
+      }
+    } catch (error) {
+      console.error("Error deleting prompt:", error);
+      alert("Network error while deleting prompt");
+    }
+  }
+
+  async function handleSystemPromptSubmit(e) {
+    e.preventDefault();
+
+    const id = document.getElementById("systemPromptId").value;
+    const isEdit = !!id;
+
+    const formData = {
+      name: document.getElementById("systemPromptName").value,
+      description: document.getElementById("systemPromptDescription").value,
+      prompt_content: document.getElementById("systemPromptContent").value,
+    };
+
+    try {
+      const url = isEdit
+        ? `/admin/api/system-prompts/${id}`
+        : "/admin/api/system-prompts";
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(
+          isEdit ? "Prompt updated successfully" : "Prompt created successfully"
+        );
+        closeSystemPromptModal();
+        loadSystemPrompts(currentSystemPromptPage);
+      } else {
+        alert(
+          "Error: " +
+            (data.error || `Failed to ${isEdit ? "update" : "create"} prompt`)
+        );
+      }
+    } catch (error) {
+      console.error("Error saving prompt:", error);
+      alert("Network error while saving prompt");
+    }
+  }
+
+  // Modal Control Functions
+  function showSystemPromptModal() {
+    document.getElementById("systemPromptModal").classList.remove("hidden");
+    document.getElementById("systemPromptModal").classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+  }
+
+  function closeSystemPromptModal() {
+    document.getElementById("systemPromptModal").classList.add("hidden");
+    document.getElementById("systemPromptModal").classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+  }
+
+  function showViewSystemPromptModal() {
+    document.getElementById("viewSystemPromptModal").classList.remove("hidden");
+    document.getElementById("viewSystemPromptModal").classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+  }
+
+  function closeViewSystemPromptModal() {
+    document.getElementById("viewSystemPromptModal").classList.add("hidden");
+    document.getElementById("viewSystemPromptModal").classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+  }
+
+  function showDeleteSystemPromptModal() {
+    document
+      .getElementById("deleteSystemPromptModal")
+      .classList.remove("hidden");
+    document.getElementById("deleteSystemPromptModal").classList.add("flex");
+  }
+
+  function closeDeleteSystemPromptModal() {
+    document.getElementById("deleteSystemPromptModal").classList.add("hidden");
+    document.getElementById("deleteSystemPromptModal").classList.remove("flex");
+    editingSystemPromptId = null;
+  }
+
+  function changeSystemPromptsPerPage() {
+    currentSystemPromptPerPage = parseInt(
+      document.getElementById("systemPromptsPerPageSelect").value
+    );
+    currentSystemPromptPage = 1;
+    loadSystemPrompts(currentSystemPromptPage);
+  }
+
+  function updateSystemPromptCharCount() {
+    const content = document.getElementById("systemPromptContent").value;
+    document.getElementById("systemPromptCharCount").textContent =
+      content.length;
+  }
+
+  function showSystemPromptsError(message) {
+    const tbody = document.getElementById("system-prompts-table-body");
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" class="px-6 py-8 text-center text-red-500">
+          <div class="flex flex-col items-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-300 mb-4"></i>
+            <p class="text-lg font-medium">Error Loading System Prompts</p>
+            <p class="text-sm">${escapeHtmlText(message)}</p>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  function formatDateTime(dateString) {
+    if (!dateString) return "Unknown";
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+  }
+
+  function escapeHtmlText(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>
+
+<style>
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .content-section {
+    min-height: calc(100vh - 4rem);
+  }
+
+  .menu-item.active {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+  }
+
+  /* Custom scrollbar */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Smooth transitions */
+  .menu-item {
+    transform: scale(1);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .menu-item:hover {
+    transform: scale(1.02);
+  }
+</style>
+{% endblock %}
