@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Verification Required</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #3b82f6;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #3b82f6;
+        margin-bottom: 10px;
+      }
+      .title {
+        color: #1f2937;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .content {
+        font-size: 16px;
+        margin-bottom: 30px;
+      }
+      .verify-button {
+        display: inline-block;
+        background-color: #3b82f6;
+        color: white;
+        padding: 12px 30px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      .verify-button:hover {
+        background-color: #2563eb;
+      }
+      .info-box {
+        background-color: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .warning-box {
+        background-color: #fee2e2;
+        border: 1px solid #ef4444;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 14px;
+      }
+      .button-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">🌤️ Weather Forecast</div>
+        <h1 class="title">Account Verification Required</h1>
+      </div>
+
+      <div class="content">
+        <p>Hello <strong>{{ user_name }}</strong>,</p>
+
+        <p>
+          Someone attempted to sign in with Google using the email address
+          <strong>{{ existing_email }}</strong>, which is already associated
+          with an existing account in our system.
+        </p>
+
+        <div class="info-box">
+          <strong>🔒 Security Notice:</strong> To protect your account, we need
+          to verify that you own both the existing account and the Google
+          account being linked.
+        </div>
+
+        <p>
+          If this was you attempting to link your Google account, please click
+          the button below to verify and complete the linking process:
+        </p>
+
+        <div class="button-container">
+          <a href="{{ verification_url }}" class="verify-button"
+            >Verify & Link Google Account</a
+          >
+        </div>
+
+        <div class="warning-box">
+          <strong>⏰ Important:</strong> This verification link will expire in
+          <strong>{{ expires_minutes }} minutes</strong> for security reasons.
+        </div>
+
+        <p>After clicking the verification link, you will be able to:</p>
+        <ul>
+          <li>✅ Sign in using either your email/password or Google account</li>
+          <li>✅ Access all your existing data and preferences</li>
+          <li>✅ Enjoy a seamless weather forecast experience</li>
+        </ul>
+
+        <div class="warning-box">
+          <strong>🚨 If this wasn't you:</strong> Please ignore this email. Your
+          account remains secure and no changes have been made. Consider
+          changing your password if you're concerned about unauthorized access
+          attempts.
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          This email was sent from Weather Forecast App.<br />
+          If you have any questions, please contact our support team.
+        </p>
+        <p>&copy; 2024 Weather Forecast. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
